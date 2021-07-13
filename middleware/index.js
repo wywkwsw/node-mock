@@ -1,6 +1,7 @@
 const Mock = require("mockjs");
 const mockJson = require("../mock-json");
 const Request = require("../utils/axios");
+const { mongodbOperation, collectionOperation } = require("../mongodb/config");
 //调取服务器接口
 /**
  * @param  getApi
@@ -22,29 +23,32 @@ function postApi(option) {
     data: option.data,
   });
 }
+//是否存在name名字的ct集合 true存在 false不存在
+async function isExistenceCt(name, cts) {
+  let ctList = await mongodbOperation(name, 4);
+  let unindex = ctList.findIndex((item) => item.name == name);
+  return unindex > -1 ? true : false;
+}
+
+//返回数据
+async function searchCt(res, path, query) {
+  //筛选条件
+  let { search } = query;
+  let isundefined = await isExistenceCt(path);
+  if (isundefined) {
+    //返回集合实例
+    let collection = await mongodbOperation(path, 3);
+    let result = await collectionOperation(collection,(value = null),query,4);
+    res.send(result);
+  } else {
+    res.send("此mock接口不存在，请创建mock接口");
+  }
+}
 /**
  * @param  mockMiddleware  中间件
  * @param {object} option 实例化的db对象
  */
-function mockMiddleware(option) {
-  let database = option;
-  /**
-   * @function createCollection 创建一个新的集合
-   * @param  {object} db 数据库对象
-   * @param  {string} name 数据库集合新建名称
-   */
-  function createCollection(db, name) {
-    db.createCollection(name).then((error, collection) => {});
-  }
-
-  /**
-   * @function dropCollection 删除一个函数集合
-   * @param  {object} db 数据库对象
-   * @param  {string} name
-   */
-  function dropCollection(db, name) {
-    db.dropCollection(name);
-  }
+function mockMiddleware() {
   /**
    * @function mockJsonfn 职责链模式方法
    * @param  {object} res 查找对象
@@ -89,11 +93,11 @@ function mockMiddleware(option) {
 
   return function _mockMiddleware(req, res, next) {
     const { type, paramnum, optionMock } = req.query;
-    const postBody = req.body
-    console.log('req.query',req.body);
-    
+    const postBody = req.body;
+    console.log("req.query", req.body);
     const path = req.path; //'/api/v1/sys/getDict'
     const apiMethods = req.method;
+
     async function run() {
       //默认先登录
       // await postApi({
@@ -109,45 +113,33 @@ function mockMiddleware(option) {
             return axiosRes.data;
           })
           .catch((err) => {
-            console.log('err',err);
-            
-            // return err.response.status;
+            return err.response ? err.response.status : "";
           });
+
         //判断服务器是否存在此接口
-        if (getStateCode === 404) {//不存在此接口，查询mongodb里的mock数据
-          
+        if (getStateCode === 404) {
+          //不存在此接口，查询mongodb里的mock数据
+          await searchCt(res, path, req.query);
         } else {
-          res.send(getStateCode)
+          res.send(getStateCode);
         }
-      }else{
-        let postStateCode = await postApi({ url: path, data: postBody }).then(axiosRes => {
-          return axiosRes.data
-        }).catch(axiosErr =>{
-          console.log('axiosErr',axiosErr);
-          
-        })
-        if (postStateCode === 404) {//不存在此接口，查询mongodb里的mock数据
-          
+      } else {
+        let postStateCode = await postApi({ url: path, data: postBody })
+          .then((axiosRes) => {
+            console.log("axiosRes", axiosRes);
+            return axiosRes.data;
+          })
+          .catch((axiosErr) => {
+            return axiosErr.response.status;
+          });
+        if (postStateCode === 404) {
+          //不存在此接口，查询mongodb里的mock数据
         } else {
-          res.send(postStateCode)
-        }          
+          res.send(postStateCode);
+        }
       }
     }
     run();
-    // let collection = database.collection("node_demo"); //连接数据库
-    // async function run() {
-    //   const query = { label: "定量" };
-    //   const movie = await collection.find(query).toArray();
-    //   console.log("movie", movie);
-    // }
-    // run();
-    // //请求方法 1，mock 2，json 请求是否是数组 >1 是数组，等于1是单条数据
-    // const path = req.path;
-    // console.log("req.path", req.path);
-    // searchApi().then((res) => {
-    //   console.log("searchApi", res);
-    // });
-    // next();
   };
 }
 
