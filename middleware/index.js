@@ -94,7 +94,7 @@ function mockMiddleware() {
   return function _mockMiddleware(req, res, next) {
     const { type, paramnum, optionMock } = req.query;
     const postBody = req.body;
-    console.log("req.query", req.body);
+    // console.log("req.query", req.body);
     const path = req.path; //'/api/v1/sys/getDict'
     const apiMethods = req.method;
 
@@ -126,11 +126,12 @@ function mockMiddleware() {
       } else {
         let postStateCode = await postApi({ url: path, data: postBody })
           .then((axiosRes) => {
-            console.log("axiosRes", axiosRes);
+            // console.log("axiosRes", axiosRes);
             return axiosRes.data;
           })
           .catch((axiosErr) => {
-            return axiosErr.response.status;
+            
+            return axiosErr.response?axiosErr.response.status:'';
           });
         if (postStateCode === 404) {
           //不存在此接口，查询mongodb里的mock数据

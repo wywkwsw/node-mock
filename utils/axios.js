@@ -1,6 +1,7 @@
 const axios = require('axios')
 const qs = require('qs')
 const querystring = require('querystring');
+let cookie = ""
 const instance = axios.create({
     baseURL: 'http://192.168.66.173:6981',
     timeout: 5000,
@@ -26,10 +27,22 @@ const instance = axios.create({
     withCredentials: false
 })
 instance.interceptors.request.use(config => {
-    config.headers['Cookie']='JSESSIONID=B58F875D1B0009D7C48D4E341828E3C5' //node中无法自动携带cookie  暂时写死
+    config.headers['Cookie']=cookie //node中无法自动携带cookie  暂时写死
     return config
 }, error => {
    return Promise.reject(error)
 })
+instance.interceptors.response.use((response) => {
+  // // 对响应数据做点什么
+  // console.log('response',response.config.url ,response.config.method);
+  if(response.config.url == '/api/v1/sys/userLogin'){
+    console.log('response',response.headers['set-cookie'][0].split(";")[0]);  
+    cookie = response.headers['set-cookie'][0].split(";")[0]   
+  }
+  return response;
+}, function (error) {
+  // 对响应错误做点什么
+  return Promise.reject(error);
+});
 
 module.exports =  instance
