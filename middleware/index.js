@@ -94,10 +94,11 @@ function mockMiddleware() {
   return function _mockMiddleware(req, res, next) {
     const { type, paramnum, optionMock } = req.query;
     const postBody = req.body;
-    // console.log("req.query", req.body);
+    // console.log("req.body", req.body);
     const path = req.path; //'/api/v1/sys/getDict'
     const apiMethods = req.method;
-
+    // console.log('console.dir(req.ip)',req.ip);
+    
     async function run() {
       //默认先登录
       // await postApi({

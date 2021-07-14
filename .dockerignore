@@ -1,0 +1,4 @@
+# /usr/src/nodejs/dockerstudy/.dockerignore
+.git
+/node_modules
+/inquirer-demo
