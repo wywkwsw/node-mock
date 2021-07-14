@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+var program = require('commander');
+program
+    .version('1.0.0','-v, --version')
+    .command('check [checkname]')
+    .alias('c')
+    .description('yo yo check now')
+    .option('-a, --name <type>', '模块名称')
+    .option('-b, --bs <type>', '模块类型')
+    // [moduleName]
+    .action((checkname,option) => {
+        console.log('指令 install 后面跟的参数值 checkname: ' + checkname);
+        console.log(option);
+        // 获得了参数，可以在这里做响应的业务处理
+    })
+    	//自定义帮助信息
+    .on('--help', function() {
+        console.log('  下面我随便说两句:')
+        console.log('')
+        console.log('$ 人有多大胆，母猪多大产，i love xx')
+        console.log('$ 广阔天地，大有所为，呱~')
+    })
+program.parse(process.argv)
+console.log(program.opts());
+
+

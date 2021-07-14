@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@craco/craco": "^6.2.0",
+    "antd": "^4.16.7",
+    "axios": "^0.21.1"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  }
+}

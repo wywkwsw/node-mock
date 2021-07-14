@@ -94,11 +94,8 @@ function mockMiddleware() {
   return function _mockMiddleware(req, res, next) {
     const { type, paramnum, optionMock } = req.query;
     const postBody = req.body;
-    // console.log("req.body", req.body);
-    const path = req.path; //'/api/v1/sys/getDict'
-    const apiMethods = req.method;
-    // console.log('console.dir(req.ip)',req.ip);
-    
+    const path = req.path;
+    const apiMethods = req.method;  
     async function run() {
       //默认先登录
       // await postApi({
@@ -110,13 +107,8 @@ function mockMiddleware() {
       //判断浏览器调取方法类型
       if (apiMethods == "GET") {
         let getStateCode = await getApi({ url: path, data: req.query }) //req.query
-          .then((axiosRes) => {
-            return axiosRes.data;
-          })
-          .catch((err) => {
-            return err.response ? err.response.status : "";
-          });
-
+          .then((axiosRes) => {return axiosRes.data})
+          .catch((err) => {return err.response ? err.response.status : "";})
         //判断服务器是否存在此接口
         if (getStateCode === 404) {
           //不存在此接口，查询mongodb里的mock数据
@@ -126,12 +118,8 @@ function mockMiddleware() {
         }
       } else {
         let postStateCode = await postApi({ url: path, data: postBody })
-          .then((axiosRes) => {
-            // console.log("axiosRes", axiosRes);
-            return axiosRes.data;
-          })
-          .catch((axiosErr) => {
-            
+          .then((axiosRes) => {return axiosRes.data})
+          .catch((axiosErr) => {         
             return axiosErr.response?axiosErr.response.status:'';
           });
         if (postStateCode === 404) {

@@ -1,0 +1,1 @@
+// craco配置注入使用与vue.config.js相一致
