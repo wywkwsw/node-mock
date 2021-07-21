@@ -117,14 +117,18 @@ function mockMiddleware() {
           res.send(getStateCode);
         }
       } else {
+        let cookieValue = ""
         let postStateCode = await postApi({ url: path, data: postBody })
-          .then((axiosRes) => {return axiosRes.data})
+          .then((axiosRes) => {
+            cookieValue = axiosRes.headers['set-cookie'][0].split(";")[0].split("=")[1]    
+            return axiosRes.data})
           .catch((axiosErr) => {         
             return axiosErr.response?axiosErr.response.status:'';
           });
         if (postStateCode === 404) {
           //不存在此接口，查询mongodb里的mock数据
         } else {
+          res.cookie('JSESSIONID',cookieValue, { maxAge: 900000, httpOnly: true ,secure:true,sameSite:'None'})
           res.send(postStateCode);
         }
       }

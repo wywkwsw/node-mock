@@ -24,9 +24,10 @@ const instance = axios.create({
     }],
     responseType: 'json',
     responseEncoding: 'utf8', // default
-    withCredentials: false
+    withCredentials: true
 })
 instance.interceptors.request.use(config => {
+    // cookie?config.headers['Cookie']=cookie:''
     config.headers['Cookie']=cookie //node中无法自动携带cookie  暂时写死
     return config
 }, error => {
@@ -34,10 +35,11 @@ instance.interceptors.request.use(config => {
 })
 instance.interceptors.response.use((response) => {
   // // 对响应数据做点什么
-  // console.log('response',response.config.url ,response.config.method);
-  if(response.config.url == '/api/v1/sys/userLogin'){
-    console.log('response',response.headers['set-cookie'][0].split(";")[0]);  
+  if(response.config.url == '/api/v1/sys/userLogin'){ 
     cookie = response.headers['set-cookie'][0].split(";")[0]   
+  }
+  if(response.config.url == '/api/v1/sys/userLogout'){
+    cookie=""
   }
   return response;
 }, function (error) {

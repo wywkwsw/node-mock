@@ -4,7 +4,7 @@
   "description": "这是一个node搭建的代理服务器，实现数据的mock",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "rollup:build": "rollup -c"
   },
   "repository": {
@@ -26,6 +26,7 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "http-proxy-middleware": "^2.0.1",
     "lodash": "^4.17.21",
     "mockjs": "^1.1.0",
     "mongodb": "^3.6.10",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
+    "jest": "^27.0.6",
     "nodemon": "^2.0.12",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
